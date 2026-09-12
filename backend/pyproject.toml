@@ -1,0 +1,57 @@
+[project]
+name = "chat-with-your-data"
+version = "0.1.0"
+description = "Conversational RAG chatbot over your own documents, with interactive retrieval showcase views."
+requires-python = ">=3.11"
+
+dependencies = [
+    # Web framework + streaming
+    "fastapi~=0.141.1",
+    "uvicorn[standard]~=0.52.4",
+    "python-multipart~=0.0.20",
+
+    # Config / secrets
+    "pydantic-settings~=2.15.0",
+    "python-dotenv~=1.1.0",
+
+    # LangChain core + agent (LangGraph-backed)
+    "langchain~=1.4.0",
+    "langchain-core~=1.6.0",
+    "langgraph~=1.2.11",
+    "langchain-openai~=1.6.2",
+    "langchain-text-splitters~=1.1.2",
+    "langchain-community~=0.4.2",
+
+    # Vector store
+    "langchain-chroma~=1.1.0",
+
+    # Persistent conversation memory (LangGraph checkpointer)
+    "langgraph-checkpoint-sqlite~=3.1.1",
+
+    # Document loaders
+    "pypdf~=6.18.1",
+
+    # Classic-only: powers the self-query + compression retrievers and the
+    # stuff/map_reduce/refine chain-type comparison view. Isolated to two modules.
+    "langchain-classic~=1.0.8",
+    "lark~=1.2.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff~=0.14.0",
+    "pytest~=8.4.0",
+    "httpx~=0.28.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
