@@ -2,7 +2,7 @@
 
 A conversational RAG (Retrieval-Augmented Generation) chatbot that answers questions about **your own documents** — with streamed answers, source citations, and conversation memory.
 
-Built as a hands-on rebuild of two DeepLearning.AI LangChain courses on the current 2026 stack (LangChain 1.4 + LangGraph), it doubles as an interactive showcase: four views let you watch the retrieval machine think.
+Built on the current LangChain 1.4 + LangGraph stack, it doubles as an interactive showcase: four views let you watch the retrieval machine think.
 
 ## What it does
 
@@ -25,17 +25,17 @@ Upload a PDF / webpage / text file → it gets chunked, embedded, and stored in 
 - **Provider**: OpenAI (`gpt-4o-mini`, `text-embedding-3-small`)
 - **Vector store**: Chroma (persisted to disk)
 
-## Course concept → module map
+## Project layout
 
-| Notebook concept | Module |
+| Area | Module |
 |---|---|
 | Document loading | `backend/app/core/loaders.py` |
 | Document splitting | `backend/app/core/splitting.py` |
 | Embeddings + vector store | `backend/app/core/embeddings.py`, `vectorstore.py` |
 | Retrieval strategies | `backend/app/core/retrievers.py` |
 | Question answering / chat | `backend/app/core/agent.py` |
-| Memory | `backend/app/core/memory.py` |
-| Chain types | `backend/app/core/chains_classic.py` |
+| Conversation memory | `backend/app/core/memory.py` |
+| Answer-combining chains | `backend/app/core/chains_classic.py` |
 | Evaluation | `backend/app/evals/` (later phase) |
 
 ## Status
