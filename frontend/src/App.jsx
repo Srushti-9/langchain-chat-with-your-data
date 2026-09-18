@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, Navigate, Route, Routes } from "react-router-dom";
 import { getHealth } from "./api/client.js";
+import ChatView from "./views/ChatView.jsx";
 
 const VIEWS = [
   { path: "/chat", label: "Chat", phase: "Phase 2" },
@@ -59,7 +60,8 @@ export default function App() {
       <main className="content">
         <Routes>
           <Route path="/" element={<Navigate to="/chat" replace />} />
-          {VIEWS.map((v) => (
+          <Route path="/chat" element={<ChatView />} />
+          {VIEWS.filter((v) => v.path !== "/chat").map((v) => (
             <Route
               key={v.path}
               path={v.path}
