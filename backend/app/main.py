@@ -1,5 +1,6 @@
 import os
 import warnings
+from contextlib import AsyncExitStack, asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,9 +17,26 @@ os.environ.setdefault("USER_AGENT", "chat-with-your-data/0.1.0")
 for directory in (settings.chroma_dir, settings.checkpoint_dir, settings.upload_dir):
     directory.mkdir(parents=True, exist_ok=True)
 
-from app.api import ingest, sessions  # noqa: E402  (import after env setup)
+from app.api import chat, ingest, sessions  # noqa: E402  (import after env setup)
+from app.core.agent import set_checkpointer  # noqa: E402
 
-app = FastAPI(title="Chat With Your Data", version="0.1.0")
+CHECKPOINT_DB = str(settings.checkpoint_dir / "graph.sqlite")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
+
+    async with AsyncExitStack() as stack:
+        checkpointer = await stack.enter_async_context(
+            AsyncSqliteSaver.from_conn_string(CHECKPOINT_DB)
+        )
+        await checkpointer.setup()
+        set_checkpointer(checkpointer)
+        yield
+
+
+app = FastAPI(title="Chat With Your Data", version="0.1.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -30,6 +48,7 @@ app.add_middleware(
 
 app.include_router(sessions.router)
 app.include_router(ingest.router)
+app.include_router(chat.router)
 
 
 @app.get("/health")
