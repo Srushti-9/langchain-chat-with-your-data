@@ -1,20 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { createSession, ingestFiles, streamChat } from "../api/client.js";
+import { ingestFiles, setRetriever, streamChat } from "../api/client.js";
+import { useSession } from "../state/SessionContext.jsx";
+
+const STRATEGIES = ["similarity", "mmr", "self_query", "compression"];
 
 export default function ChatView() {
-  const [sessionId, setSessionId] = useState(null);
-  const [docCount, setDocCount] = useState(0);
+  const { sessionId, docCount, setDocCount, strategy, setStrategy } = useSession();
   const [uploading, setUploading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const scrollRef = useRef(null);
-
-  useEffect(() => {
-    createSession()
-      .then((s) => setSessionId(s.session_id))
-      .catch((e) => console.error("session create failed", e));
-  }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
@@ -35,13 +31,22 @@ export default function ChatView() {
     }
   }
 
+  async function handleStrategyChange(e) {
+    const next = e.target.value;
+    setStrategy(next);
+    try {
+      await setRetriever(sessionId, next);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   async function handleSend() {
     const text = input.trim();
     if (!text || !sessionId || busy) return;
     setInput("");
     setBusy(true);
     setMessages((m) => [...m, { role: "user", content: text }]);
-    // reserve the assistant slot we stream tokens into
     const assistantIdx = messages.length + 1;
     setMessages((m) => [...m, { role: "assistant", content: "", sources: [] }]);
 
@@ -96,6 +101,16 @@ export default function ChatView() {
           />
         </label>
         <span className="doc-count">{docCount} chunks indexed</span>
+        <label className="strategy-select">
+          Retriever
+          <select value={strategy} onChange={handleStrategyChange} disabled={busy}>
+            {STRATEGIES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
 
       <div className="messages" ref={scrollRef}>

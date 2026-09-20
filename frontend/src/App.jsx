@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Navigate, Route, Routes } from "react-router-dom";
 import { getHealth } from "./api/client.js";
 import ChatView from "./views/ChatView.jsx";
+import RetrievalComparisonView from "./views/RetrievalComparisonView.jsx";
 
 const VIEWS = [
   { path: "/chat", label: "Chat", phase: "Phase 2" },
@@ -61,7 +62,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/chat" replace />} />
           <Route path="/chat" element={<ChatView />} />
-          {VIEWS.filter((v) => v.path !== "/chat").map((v) => (
+          <Route path="/retrieval" element={<RetrievalComparisonView />} />
+          {VIEWS.filter((v) => v.path !== "/chat" && v.path !== "/retrieval").map((v) => (
             <Route
               key={v.path}
               path={v.path}
