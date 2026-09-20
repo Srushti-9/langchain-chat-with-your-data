@@ -12,6 +12,7 @@ from app.core.vectorstore import count_documents, delete_collection
 class Session:
     session_id: str
     created_at: datetime
+    strategy: str = "similarity"
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
 
 

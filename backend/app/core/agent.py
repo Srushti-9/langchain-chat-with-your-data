@@ -27,8 +27,8 @@ def get_chat_model() -> BaseChatModel:
     )
 
 
-def build_agent(session_id: str):
-    retriever = get_retriever(session_id)
+def build_agent(session_id: str, strategy: str = "similarity"):
+    retriever = get_retriever(session_id, strategy)
     retriever_tool = create_retriever_tool(
         retriever,
         name="search_documents",
