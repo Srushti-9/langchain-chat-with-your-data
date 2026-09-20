@@ -30,8 +30,8 @@ def _sources_from_artifact(artifact) -> list[dict]:
     return sources
 
 
-async def stream_chat(session_id: str, message: str) -> AsyncIterator[str]:
-    agent = build_agent(session_id)
+async def stream_chat(session_id: str, message: str, strategy: str = "similarity") -> AsyncIterator[str]:
+    agent = build_agent(session_id, strategy)
     config = {"configurable": {"thread_id": session_id}}
 
     try:

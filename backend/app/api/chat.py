@@ -15,6 +15,6 @@ async def chat(
     session: Session = Depends(resolve_session),
 ) -> StreamingResponse:
     return StreamingResponse(
-        stream_chat(session.session_id, request.message),
+        stream_chat(session.session_id, request.message, session.strategy),
         media_type="text/event-stream",
     )
