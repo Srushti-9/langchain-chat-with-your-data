@@ -23,6 +23,26 @@ export async function ingestFiles(sessionId, files) {
   return res.json();
 }
 
+export async function setRetriever(sessionId, strategy) {
+  const res = await fetch(`${BASE}/sessions/${sessionId}/retriever`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ strategy }),
+  });
+  if (!res.ok) throw new Error(`setRetriever ${res.status}`);
+  return res.json();
+}
+
+export async function compareRetrieval(sessionId, query, strategies, k) {
+  const res = await fetch(`${BASE}/sessions/${sessionId}/retrieval/compare`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query, strategies, k }),
+  });
+  if (!res.ok) throw new Error(`compare ${res.status}`);
+  return res.json();
+}
+
 // Streams SSE chat events, invoking onEvent({type, ...}) per parsed event.
 export async function streamChat(sessionId, message, onEvent, signal) {
   const res = await fetch(`${BASE}/sessions/${sessionId}/chat`, {
