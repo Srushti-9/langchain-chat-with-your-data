@@ -16,6 +16,10 @@ def set_checkpointer(checkpointer: BaseCheckpointSaver) -> None:
     _checkpointer = checkpointer
 
 
+def get_checkpointer() -> BaseCheckpointSaver | None:
+    return _checkpointer
+
+
 def get_chat_model() -> BaseChatModel:
     settings = get_settings()
     return ChatOpenAI(
