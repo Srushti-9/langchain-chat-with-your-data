@@ -17,7 +17,7 @@ os.environ.setdefault("USER_AGENT", "chat-with-your-data/0.1.0")
 for directory in (settings.chroma_dir, settings.checkpoint_dir, settings.upload_dir):
     directory.mkdir(parents=True, exist_ok=True)
 
-from app.api import chat, ingest, retrieval, sessions  # noqa: E402  (import after env setup)
+from app.api import chains, chat, ingest, memory, pipeline, retrieval, sessions  # noqa: E402  (import after env setup)
 from app.core.agent import set_checkpointer  # noqa: E402
 
 CHECKPOINT_DB = str(settings.checkpoint_dir / "graph.sqlite")
@@ -50,6 +50,9 @@ app.include_router(sessions.router)
 app.include_router(ingest.router)
 app.include_router(chat.router)
 app.include_router(retrieval.router)
+app.include_router(memory.router)
+app.include_router(pipeline.router)
+app.include_router(chains.router)
 
 
 @app.get("/health")
