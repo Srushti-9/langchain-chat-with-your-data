@@ -43,6 +43,50 @@ export async function compareRetrieval(sessionId, query, strategies, k) {
   return res.json();
 }
 
+export async function getMemory(sessionId) {
+  const res = await fetch(`${BASE}/sessions/${sessionId}/memory`);
+  if (!res.ok) throw new Error(`getMemory ${res.status}`);
+  return res.json();
+}
+
+export async function resetMemory(sessionId) {
+  const res = await fetch(`${BASE}/sessions/${sessionId}/memory/reset`, {
+    method: "POST",
+  });
+  if (!res.ok) throw new Error(`resetMemory ${res.status}`);
+  return res.json();
+}
+
+export async function previewCondensed(sessionId, followup) {
+  const res = await fetch(`${BASE}/sessions/${sessionId}/memory/preview-condensed`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ followup }),
+  });
+  if (!res.ok) throw new Error(`previewCondensed ${res.status}`);
+  return res.json();
+}
+
+export async function tracePipeline(sessionId, query, k) {
+  const res = await fetch(`${BASE}/sessions/${sessionId}/pipeline/trace`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query, k }),
+  });
+  if (!res.ok) throw new Error(`tracePipeline ${res.status}`);
+  return res.json();
+}
+
+export async function compareChains(sessionId, query, chainTypes, k) {
+  const res = await fetch(`${BASE}/sessions/${sessionId}/chains/compare`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query, chain_types: chainTypes, k }),
+  });
+  if (!res.ok) throw new Error(`compareChains ${res.status}`);
+  return res.json();
+}
+
 // Streams SSE chat events, invoking onEvent({type, ...}) per parsed event.
 export async function streamChat(sessionId, message, onEvent, signal) {
   const res = await fetch(`${BASE}/sessions/${sessionId}/chat`, {
