@@ -124,6 +124,38 @@ body {
   font-size: 0.9rem;
 }
 
+.error-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #fdecec;
+  border: 1px solid #f0b4b4;
+  color: #a12b2b;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+
+.error-bar button {
+  background: none;
+  border: none;
+  color: #a12b2b;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+/* In the chat view the bar sits flush between the top bar and message list. */
+.chat .error-bar {
+  margin: 0;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+}
+
 /* Chat view — fills the content area as a flex column with its own scroll region. */
 .content:has(.chat) {
   padding: 0;

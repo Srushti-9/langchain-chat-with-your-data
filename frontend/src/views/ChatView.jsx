@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ingestFiles, setRetriever, streamChat } from "../api/client.js";
 import { useSession } from "../state/SessionContext.jsx";
+import ErrorBar from "../components/ErrorBar.jsx";
 
 const STRATEGIES = ["similarity", "mmr", "self_query", "compression"];
 
@@ -10,6 +11,7 @@ export default function ChatView() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -21,11 +23,12 @@ export default function ChatView() {
     e.target.value = "";
     if (!files.length || !sessionId) return;
     setUploading(true);
+    setError(null);
     try {
       const res = await ingestFiles(sessionId, files);
       setDocCount((c) => c + res.total_chunks);
     } catch (err) {
-      console.error(err);
+      setError("Upload failed. Supported types: PDF, TXT, MD.");
     } finally {
       setUploading(false);
     }
@@ -37,7 +40,7 @@ export default function ChatView() {
     try {
       await setRetriever(sessionId, next);
     } catch (err) {
-      console.error(err);
+      setError("Could not switch retriever strategy.");
     }
   }
 
@@ -80,7 +83,16 @@ export default function ChatView() {
         }
       });
     } catch (err) {
-      console.error(err);
+      setMessages((m) => {
+        const next = [...m];
+        const cur = next[assistantIdx];
+        next[assistantIdx] = {
+          ...cur,
+          content: cur.content || "⚠ Connection lost before a reply arrived.",
+          error: !cur.content,
+        };
+        return next;
+      });
     } finally {
       setBusy(false);
     }
@@ -112,6 +124,8 @@ export default function ChatView() {
           </select>
         </label>
       </div>
+
+      <ErrorBar message={error} onDismiss={() => setError(null)} />
 
       <div className="messages" ref={scrollRef}>
         {messages.length === 0 && (

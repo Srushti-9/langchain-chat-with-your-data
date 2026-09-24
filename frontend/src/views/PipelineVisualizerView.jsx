@@ -1,22 +1,25 @@
 import { useState } from "react";
 import { tracePipeline } from "../api/client.js";
 import { useSession } from "../state/SessionContext.jsx";
+import ErrorBar from "../components/ErrorBar.jsx";
 
 export default function PipelineVisualizerView() {
   const { sessionId, docCount } = useSession();
   const [query, setQuery] = useState("");
   const [trace, setTrace] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
 
   async function run() {
     const q = query.trim();
     if (!q || !sessionId || busy) return;
     setBusy(true);
+    setError(null);
     try {
       const res = await tracePipeline(sessionId, q, 4);
       setTrace(res);
     } catch (err) {
-      console.error(err);
+      setError("Trace failed. Check the backend and try again.");
     } finally {
       setBusy(false);
     }
@@ -29,6 +32,8 @@ export default function PipelineVisualizerView() {
         Trace one query through the full RAG pipeline: embed → retrieve → answer.
         {docCount === 0 && " Upload a document in the Chat view first."}
       </p>
+
+      <ErrorBar message={error} onDismiss={() => setError(null)} />
 
       <div className="pipeline-controls">
         <input

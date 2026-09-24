@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { compareChains } from "../api/client.js";
 import { useSession } from "../state/SessionContext.jsx";
+import ErrorBar from "../components/ErrorBar.jsx";
 
 const CHAIN_TYPES = ["stuff", "map_reduce", "refine"];
 
@@ -9,16 +10,18 @@ export default function ChainComparisonView() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
 
   async function run() {
     const q = query.trim();
     if (!q || !sessionId || busy) return;
     setBusy(true);
+    setError(null);
     try {
       const res = await compareChains(sessionId, q, CHAIN_TYPES, 4);
       setResults(res.results);
     } catch (err) {
-      console.error(err);
+      setError("Comparison failed. Check the backend and try again.");
     } finally {
       setBusy(false);
     }
@@ -31,6 +34,8 @@ export default function ChainComparisonView() {
         The same retrieved chunks fed through three document-combining strategies. Watch how latency trades off against how each chain builds its answer.
         {docCount === 0 && " Upload a document in the Chat view first."}
       </p>
+
+      <ErrorBar message={error} onDismiss={() => setError(null)} />
 
       <div className="chains-controls">
         <input

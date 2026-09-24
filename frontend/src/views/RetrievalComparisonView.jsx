@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { compareRetrieval } from "../api/client.js";
 import { useSession } from "../state/SessionContext.jsx";
+import ErrorBar from "../components/ErrorBar.jsx";
 
 const STRATEGIES = ["similarity", "mmr", "self_query", "compression"];
 
@@ -10,6 +11,7 @@ export default function RetrievalComparisonView() {
   const [selected, setSelected] = useState(STRATEGIES);
   const [results, setResults] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
 
   function toggle(s) {
     setSelected((cur) =>
@@ -21,11 +23,12 @@ export default function RetrievalComparisonView() {
     const q = query.trim();
     if (!q || !sessionId || !selected.length || busy) return;
     setBusy(true);
+    setError(null);
     try {
       const res = await compareRetrieval(sessionId, q, selected, 4);
       setResults(res.results);
     } catch (err) {
-      console.error(err);
+      setError("Comparison failed. Check the backend and try again.");
     } finally {
       setBusy(false);
     }
@@ -38,6 +41,8 @@ export default function RetrievalComparisonView() {
         Run one query through multiple retrieval strategies and compare the chunks each returns.
         {docCount === 0 && " Upload a document in the Chat view first."}
       </p>
+
+      <ErrorBar message={error} onDismiss={() => setError(null)} />
 
       <div className="compare-controls">
         <input

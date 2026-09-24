@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMemory, previewCondensed, resetMemory } from "../api/client.js";
 import { useSession } from "../state/SessionContext.jsx";
+import ErrorBar from "../components/ErrorBar.jsx";
 
 export default function MemoryInspectorView() {
   const { sessionId } = useSession();
@@ -9,15 +10,17 @@ export default function MemoryInspectorView() {
   const [followup, setFollowup] = useState("");
   const [condensed, setCondensed] = useState(null);
   const [condensing, setCondensing] = useState(false);
+  const [error, setError] = useState(null);
 
   async function refresh() {
     if (!sessionId) return;
     setLoading(true);
+    setError(null);
     try {
       const res = await getMemory(sessionId);
       setTurns(res.turns);
     } catch (err) {
-      console.error(err);
+      setError("Could not load conversation memory.");
     } finally {
       setLoading(false);
     }
@@ -29,12 +32,13 @@ export default function MemoryInspectorView() {
 
   async function handleReset() {
     if (!sessionId) return;
+    setError(null);
     try {
       const res = await resetMemory(sessionId);
       setTurns(res.turns);
       setCondensed(null);
     } catch (err) {
-      console.error(err);
+      setError("Could not reset the thread.");
     }
   }
 
@@ -42,11 +46,12 @@ export default function MemoryInspectorView() {
     const q = followup.trim();
     if (!q || !sessionId || condensing) return;
     setCondensing(true);
+    setError(null);
     try {
       const res = await previewCondensed(sessionId, q);
       setCondensed(res.standalone_question);
     } catch (err) {
-      console.error(err);
+      setError("Could not rewrite the follow-up.");
     } finally {
       setCondensing(false);
     }
@@ -68,6 +73,8 @@ export default function MemoryInspectorView() {
       <p className="memory-hint">
         The conversation history LangGraph persists for this session's thread. Chat turns accumulate here across requests.
       </p>
+
+      <ErrorBar message={error} onDismiss={() => setError(null)} />
 
       <div className="memory-turns">
         {turns.length === 0 ? (
