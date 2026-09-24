@@ -3,6 +3,9 @@ import { NavLink, Navigate, Route, Routes } from "react-router-dom";
 import { getHealth } from "./api/client.js";
 import ChatView from "./views/ChatView.jsx";
 import RetrievalComparisonView from "./views/RetrievalComparisonView.jsx";
+import MemoryInspectorView from "./views/MemoryInspectorView.jsx";
+import PipelineVisualizerView from "./views/PipelineVisualizerView.jsx";
+import ChainComparisonView from "./views/ChainComparisonView.jsx";
 
 const VIEWS = [
   { path: "/chat", label: "Chat", phase: "Phase 2" },
@@ -32,15 +35,6 @@ function HealthDot() {
   );
 }
 
-function Placeholder({ label, phase }) {
-  return (
-    <div className="placeholder">
-      <h2>{label}</h2>
-      <p>Coming in {phase}.</p>
-    </div>
-  );
-}
-
 export default function App() {
   return (
     <div className="app">
@@ -63,13 +57,9 @@ export default function App() {
           <Route path="/" element={<Navigate to="/chat" replace />} />
           <Route path="/chat" element={<ChatView />} />
           <Route path="/retrieval" element={<RetrievalComparisonView />} />
-          {VIEWS.filter((v) => v.path !== "/chat" && v.path !== "/retrieval").map((v) => (
-            <Route
-              key={v.path}
-              path={v.path}
-              element={<Placeholder label={v.label} phase={v.phase} />}
-            />
-          ))}
+          <Route path="/memory" element={<MemoryInspectorView />} />
+          <Route path="/pipeline" element={<PipelineVisualizerView />} />
+          <Route path="/chains" element={<ChainComparisonView />} />
         </Routes>
       </main>
     </div>
