@@ -38,6 +38,22 @@ Upload a PDF / webpage / text file → it gets chunked, embedded, and stored in 
 | Answer-combining chains | `backend/app/core/chains_classic.py` |
 | Evaluation | `backend/app/evals/` (later phase) |
 
+## Running it locally
+
+```bash
+# backend
+cd backend && pip install -e . && uvicorn app.main:app --reload   # :8000
+
+# frontend
+cd frontend && npm install && npm run dev                          # :5173
+```
+
+Set `OPENAI_API_KEY` in `backend/.env` (see `.env.example` for all keys). The frontend talks to the backend through Vite's dev proxy, so no CORS setup is needed in development.
+
+## Scope
+
+Single-user, local-first by design. Chroma and the SQLite checkpointer aren't built for concurrent writers, so ingestion is serialized per session and chat turns are serialized per conversation thread. Sessions live in memory (lost on restart), while the vector store and conversation checkpoints persist to disk.
+
 ## Status
 
-Work in progress — built in phases: skeleton → ingestion → chat → showcase views → polish → evals.
+Built in phases: skeleton → ingestion → chat → showcase views → **polish** (done) → evals (deferred). The four showcase views, streaming chat with citations and memory, and visible loading/error states are all in place.
