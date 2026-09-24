@@ -21,7 +21,7 @@ export default function RetrievalComparisonView() {
 
   async function run() {
     const q = query.trim();
-    if (!q || !sessionId || !selected.length || busy) return;
+    if (!q || !sessionId || !selected.length || !docCount || busy) return;
     setBusy(true);
     setError(null);
     try {
@@ -52,7 +52,7 @@ export default function RetrievalComparisonView() {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && run()}
         />
-        <button onClick={run} disabled={busy || !query.trim() || !selected.length}>
+        <button onClick={run} disabled={busy || !query.trim() || !selected.length || !docCount}>
           {busy ? "Running…" : "Compare"}
         </button>
       </div>

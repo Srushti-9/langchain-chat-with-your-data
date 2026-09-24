@@ -14,7 +14,7 @@ export default function ChainComparisonView() {
 
   async function run() {
     const q = query.trim();
-    if (!q || !sessionId || busy) return;
+    if (!q || !sessionId || !docCount || busy) return;
     setBusy(true);
     setError(null);
     try {
@@ -45,7 +45,7 @@ export default function ChainComparisonView() {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && run()}
         />
-        <button onClick={run} disabled={busy || !query.trim()}>
+        <button onClick={run} disabled={busy || !query.trim() || !docCount}>
           {busy ? "Running…" : "Compare"}
         </button>
       </div>
