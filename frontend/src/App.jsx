@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, Navigate, Route, Routes } from "react-router-dom";
 import { getHealth } from "./api/client.js";
+import { useSession } from "./state/SessionContext.jsx";
 import ChatView from "./views/ChatView.jsx";
 import RetrievalComparisonView from "./views/RetrievalComparisonView.jsx";
 import MemoryInspectorView from "./views/MemoryInspectorView.jsx";
@@ -53,15 +54,40 @@ export default function App() {
       </aside>
 
       <main className="content">
-        <Routes>
-          <Route path="/" element={<Navigate to="/chat" replace />} />
-          <Route path="/chat" element={<ChatView />} />
-          <Route path="/retrieval" element={<RetrievalComparisonView />} />
-          <Route path="/memory" element={<MemoryInspectorView />} />
-          <Route path="/pipeline" element={<PipelineVisualizerView />} />
-          <Route path="/chains" element={<ChainComparisonView />} />
-        </Routes>
+        <SessionGate>
+          <Routes>
+            <Route path="/" element={<Navigate to="/chat" replace />} />
+            <Route path="/chat" element={<ChatView />} />
+            <Route path="/retrieval" element={<RetrievalComparisonView />} />
+            <Route path="/memory" element={<MemoryInspectorView />} />
+            <Route path="/pipeline" element={<PipelineVisualizerView />} />
+            <Route path="/chains" element={<ChainComparisonView />} />
+          </Routes>
+        </SessionGate>
       </main>
     </div>
   );
+}
+
+function SessionGate({ children }) {
+  const { sessionReady, sessionError, retrySession } = useSession();
+
+  if (sessionError) {
+    return (
+      <div className="session-gate">
+        <p className="gate-error">{sessionError}</p>
+        <button onClick={retrySession}>Retry</button>
+      </div>
+    );
+  }
+
+  if (!sessionReady) {
+    return (
+      <div className="session-gate">
+        <p className="gate-connecting">Connecting to the backend…</p>
+      </div>
+    );
+  }
+
+  return children;
 }

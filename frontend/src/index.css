@@ -97,6 +97,33 @@ body {
   font-size: 1.05rem;
 }
 
+.session-gate {
+  max-width: 480px;
+  margin: 80px auto 0;
+  text-align: center;
+}
+
+.gate-connecting {
+  color: #6b7590;
+  font-size: 1.05rem;
+}
+
+.gate-error {
+  color: #a12b2b;
+  font-size: 1.02rem;
+  margin-bottom: 16px;
+}
+
+.session-gate button {
+  padding: 8px 20px;
+  background: #5b6ee1;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
 /* Chat view — fills the content area as a flex column with its own scroll region. */
 .content:has(.chat) {
   padding: 0;

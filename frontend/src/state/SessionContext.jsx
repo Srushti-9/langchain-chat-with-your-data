@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { createSession } from "../api/client.js";
 
 const SessionContext = createContext(null);
@@ -7,16 +7,31 @@ export function SessionProvider({ children }) {
   const [sessionId, setSessionId] = useState(null);
   const [docCount, setDocCount] = useState(0);
   const [strategy, setStrategy] = useState("similarity");
+  const [sessionError, setSessionError] = useState(null);
 
-  useEffect(() => {
+  const bootstrap = useCallback(() => {
+    setSessionError(null);
     createSession()
       .then((s) => setSessionId(s.session_id))
-      .catch((e) => console.error("session create failed", e));
+      .catch(() => setSessionError("Could not reach the backend to start a session."));
   }, []);
+
+  useEffect(() => {
+    bootstrap();
+  }, [bootstrap]);
 
   return (
     <SessionContext.Provider
-      value={{ sessionId, docCount, setDocCount, strategy, setStrategy }}
+      value={{
+        sessionId,
+        sessionReady: Boolean(sessionId),
+        sessionError,
+        retrySession: bootstrap,
+        docCount,
+        setDocCount,
+        strategy,
+        setStrategy,
+      }}
     >
       {children}
     </SessionContext.Provider>
